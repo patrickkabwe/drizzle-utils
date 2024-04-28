@@ -1,0 +1,53 @@
+name: Release
+on:
+  release:
+    types: [prereleased, released]
+  push: 
+    branches:
+      - main
+
+permissions:
+  contents: read
+jobs:
+  publish:
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
+    name: Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: git config --global user.name ${{ github.actor }}
+      - run: git config --global user.email ${{ github.actor }}@users.noreply.github.com
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+      - uses: pnpm/action-setup@v3
+        name: Install pnpm
+        with:
+          version: 8
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - uses: actions/cache@v4
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install
+      - run: pnpm audit signatures
+      - run: pnpm build
+      - run: pnpx semantic-release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

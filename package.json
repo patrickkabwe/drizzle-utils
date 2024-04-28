@@ -1,0 +1,75 @@
+{
+  "name": "@kazion/drizzle-utils",
+  "version": "0.0.2",
+  "description": "A collection of utilities for working with Drizzle ORM",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "license": "MIT",
+  "scripts": {
+    "test": "vitest",
+    "build": "rm -rf dist && tsc -p tsconfig.json && tsup",
+    "prerelease": "npm run build"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/patrickkabwe/drizzle-utils",
+  "author": {
+    "name": "Patrick Kabwe",
+    "email": "patrickckabwe@gmail.com",
+    "url": "https://github.com/patrickkabwe"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/patrickkabwe/drizzle-utils"
+  },
+  "bugs": {
+    "url": "https://github.com/patrickkabwe/drizzle-utils/issues",
+    "email": "patrickckabwe@gmail.com"
+  },
+  "keywords": [
+    "drizzle",
+    "drizzle-orm",
+    "drizzle-kit",
+    "drizzle-utils"
+  ],
+  "devDependencies": {
+    "@semantic-release/git": "^10.0.1",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5",
+    "vitest": "^1.5.2"
+  },
+  "peerDependencies": {
+    "drizzle-orm": "^0.30.9"
+  },
+  "release": {
+    "branches": [
+      "main",
+      "next",
+      {
+        "name": "beta",
+        "prerelease": true
+      }
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      [
+        "@semantic-release/git",
+        {
+          "assets": [
+            "package.json",
+            "lib/*",
+            "src/*"
+          ],
+          "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+        }
+      ],
+      "@semantic-release/github",
+      "@semantic-release/npm"
+    ]
+  }
+}
